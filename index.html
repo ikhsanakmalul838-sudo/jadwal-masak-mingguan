@@ -3,20 +3,21 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Jadwal Masak Mingguan</title>
+    <title>Aplikasi Tabungan</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- 🎊 Confetti Library -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <style>
       body {
-        background: url("https://i.ibb.co/ZVP4VPK/kitchen-bg.png") no-repeat
-          center center fixed;
-        background-size: cover;
+        background: linear-gradient(to right, #d1fae5, #fef9c3);
+        min-height: 100vh;
       }
       .card {
-        animation: pop 0.35s ease-in-out;
+        animation: pop 0.4s ease-in-out;
       }
       @keyframes pop {
         from {
-          transform: scale(0.96);
+          transform: scale(0.9);
           opacity: 0;
         }
         to {
@@ -24,253 +25,254 @@
           opacity: 1;
         }
       }
+      .progress-animate {
+        transition: width 0.6s ease-in-out;
+      }
     </style>
   </head>
-  <body class="bg-orange-50/90 min-h-screen flex flex-col items-center py-10">
-    <h1 class="text-4xl font-extrabold mb-6 text-red-700 drop-shadow">
-      👩‍🍳 Jadwal Masak Mingguan 🍲
+  <body class="flex flex-col items-center py-10 px-4">
+    <h1
+      class="text-5xl font-extrabold mb-6 text-green-700 drop-shadow-lg text-center"
+    >
+      💰 Aplikasi Tabungan
     </h1>
+    <p class="mb-8 text-lg text-gray-700 italic text-center">
+      “Sedikit demi sedikit, lama-lama menjadi bukit 🏔️”
+    </p>
 
     <!-- Form Input -->
     <div
-      class="bg-white p-6 rounded-2xl shadow-2xl w-full max-w-md mb-6 border-4 border-orange-300"
+      class="bg-white/90 backdrop-blur p-6 rounded-2xl shadow-2xl w-full max-w-md mb-6 border-4 border-green-300"
     >
-      <label class="block mb-2 font-semibold">📆 Hari</label>
-      <select id="day" class="w-full border rounded-lg p-2 mb-4">
-        <option>Senin</option>
-        <option>Selasa</option>
-        <option>Rabu</option>
-        <option>Kamis</option>
-        <option>Jumat</option>
-        <option>Sabtu</option>
-        <option>Minggu</option>
-      </select>
+      <h2 class="text-xl font-bold mb-4 text-green-600">➕ Tambah Tabungan</h2>
 
-      <label class="block mb-2 font-semibold">⏰ Waktu</label>
-      <select id="time" class="w-full border rounded-lg p-2 mb-4">
-        <option value="Siang">🍽️ Siang</option>
-        <option value="Malam">🌙 Malam</option>
-        <option value="Cemilan">🍪 Cemilan</option>
-      </select>
+      <label class="block mb-2 font-semibold">📅 Tanggal</label>
+      <input id="date" type="date" class="w-full border rounded-lg p-2 mb-4" />
 
-      <label class="block mb-2 font-semibold">🍛 Menu Masakan</label>
+      <label class="block mb-2 font-semibold">💵 Jumlah Tabungan (Rp)</label>
       <input
-        id="menu"
-        type="text"
+        id="amount"
+        type="number"
         class="w-full border rounded-lg p-2 mb-4"
-        placeholder="Masukkan nama masakan"
+        placeholder="Masukkan jumlah uang"
       />
 
-      <label class="block mb-2 font-semibold">📖 Resep (bahan & takaran)</label>
-      <textarea
-        id="recipe"
+      <label class="block mb-2 font-semibold">📝 Keterangan</label>
+      <input
+        id="note"
+        type="text"
         class="w-full border rounded-lg p-2 mb-4"
-        placeholder="Contoh: 2 siung bawang putih, 1 sdt garam..."
-      ></textarea>
-
-      <label class="block mb-2 font-semibold">👨‍🍳 Cara Memasak</label>
-      <textarea
-        id="steps"
-        class="w-full border rounded-lg p-2 mb-4"
-        placeholder="Langkah-langkah memasak..."
-      ></textarea>
+        placeholder="Misal: gaji, jajan, bonus"
+      />
 
       <button
-        onclick="addSchedule()"
-        class="bg-gradient-to-r from-orange-500 to-red-500 text-white px-4 py-2 rounded-xl shadow hover:scale-105 transition"
+        onclick="addSaving()"
+        class="w-full bg-gradient-to-r from-green-500 to-emerald-600 text-white font-bold px-4 py-3 rounded-xl shadow hover:scale-105 transition"
       >
-        ➕ Simpan Jadwal
+        Tambah Tabungan
       </button>
     </div>
 
-    <!-- Filter -->
+    <!-- Target Tabungan -->
     <div
-      class="bg-white p-4 rounded-xl shadow-lg w-full max-w-3xl mb-6 border-2 border-orange-300 flex flex-col md:flex-row gap-4 justify-between"
+      class="bg-white/90 backdrop-blur p-6 rounded-2xl shadow-2xl w-full max-w-md mb-6 border-4 border-yellow-300"
     >
-      <div>
-        <label class="font-semibold">📆 Filter Hari:</label>
-        <select
-          id="filterDay"
-          onchange="renderSchedules()"
-          class="border rounded-lg p-2"
-        >
-          <option value="All">Semua</option>
-          <option>Senin</option>
-          <option>Selasa</option>
-          <option>Rabu</option>
-          <option>Kamis</option>
-          <option>Jumat</option>
-          <option>Sabtu</option>
-          <option>Minggu</option>
-        </select>
-      </div>
+      <h2 class="text-xl font-bold mb-3 text-yellow-700">🎯 Target Tabungan</h2>
+      <input
+        id="target"
+        type="number"
+        class="w-full border rounded-lg p-2 mb-4"
+        placeholder="Masukkan target (Rp)"
+      />
+      <button
+        onclick="setTarget()"
+        class="w-full bg-yellow-500 text-white px-4 py-2 rounded-xl font-bold hover:bg-yellow-600"
+      >
+        Simpan Target
+      </button>
 
-      <div>
-        <label class="font-semibold">⏰ Filter Waktu:</label>
-        <select
-          id="filterTime"
-          onchange="renderSchedules()"
-          class="border rounded-lg p-2"
+      <div class="mt-6">
+        <p class="font-bold text-lg">
+          Target: <span id="targetDisplay" class="text-yellow-700">Rp 0</span>
+        </p>
+        <div class="w-full bg-gray-200 rounded-full h-6 mt-3 shadow-inner">
+          <div
+            id="progressBar"
+            class="progress-animate bg-gradient-to-r from-green-400 to-emerald-600 h-6 rounded-full text-xs text-white text-center leading-6"
+          >
+            0%
+          </div>
+        </div>
+        <p
+          id="motivation"
+          class="mt-3 text-center font-semibold text-green-600"
         >
-          <option value="All">Semua</option>
-          <option value="Siang">Siang</option>
-          <option value="Malam">Malam</option>
-          <option value="Cemilan">Cemilan</option>
-        </select>
+          Ayo semangat menabung! 🚀
+        </p>
       </div>
     </div>
 
-    <!-- Daftar Jadwal -->
+    <!-- Total -->
     <div
-      class="bg-white p-6 rounded-2xl shadow-xl w-full max-w-3xl border-4 border-red-300"
+      class="bg-gradient-to-r from-emerald-400 to-green-500 text-white p-6 rounded-2xl shadow-lg mb-6 border-2 border-green-700 text-center"
     >
-      <h2 class="text-2xl font-bold mb-4 text-red-700">
-        🍴 Daftar Masakan Mingguan
+      <h2 class="text-2xl font-bold">Total Tabungan</h2>
+      <p id="total" class="text-4xl font-extrabold mt-2">Rp 0</p>
+    </div>
+
+    <!-- Daftar Tabungan -->
+    <div
+      class="bg-white/90 backdrop-blur p-6 rounded-2xl shadow-xl w-full max-w-2xl border-4 border-green-300"
+    >
+      <h2 class="text-2xl font-bold mb-4 text-green-700">
+        📋 Riwayat Tabungan
       </h2>
-      <ul id="scheduleList" class="space-y-5"></ul>
+      <ul id="savingList" class="space-y-3"></ul>
     </div>
+
+    <!-- Tombol Reset -->
+    <button
+      onclick="resetSavings()"
+      class="mt-6 bg-red-600 text-white px-6 py-3 rounded-xl shadow-lg font-bold hover:bg-red-700"
+    >
+      🔄 Reset Semua Tabungan
+    </button>
 
     <script>
-      let schedules = JSON.parse(localStorage.getItem("schedules")) || [];
+      let savings = JSON.parse(localStorage.getItem("savings")) || [];
+      let target = JSON.parse(localStorage.getItem("target")) || 0;
 
-      const icons = [
-        "🍲",
-        "🍜",
-        "🍛",
-        "🍗",
-        "🥗",
-        "🥘",
-        "🥪",
-        "🍝",
-        "🌮",
-        "🍱",
-        "🍪",
-        "🧁",
-        "🍩",
-        "🥨",
-      ];
-
-      function persist() {
-        localStorage.setItem("schedules", JSON.stringify(schedules));
+      function formatRupiah(angka) {
+        return new Intl.NumberFormat("id-ID").format(angka);
       }
 
-      function addSchedule() {
-        const day = document.getElementById("day").value;
-        const time = document.getElementById("time").value;
-        const menu = document.getElementById("menu").value.trim();
-        const recipe = document.getElementById("recipe").value.trim();
-        const steps = document.getElementById("steps").value.trim();
+      function saveSavings() {
+        localStorage.setItem("savings", JSON.stringify(savings));
+        renderSavings();
+      }
 
-        if (!menu) {
-          alert("Masukkan nama masakan!");
+      function addSaving() {
+        const date =
+          document.getElementById("date").value ||
+          new Date().toISOString().split("T")[0];
+        const amount = parseInt(document.getElementById("amount").value);
+        const note = document.getElementById("note").value;
+
+        if (!amount || amount <= 0) {
+          alert("Masukkan jumlah tabungan yang valid!");
           return;
         }
 
-        const icon = icons[Math.floor(Math.random() * icons.length)];
-        schedules.push({ day, time, menu, recipe, steps, icon, done: false });
+        savings.push({ date, amount, note });
+        saveSavings();
 
-        document.getElementById("menu").value = "";
-        document.getElementById("recipe").value = "";
-        document.getElementById("steps").value = "";
-
-        persist();
-        renderSchedules();
+        document.getElementById("amount").value = "";
+        document.getElementById("note").value = "";
       }
 
-      function toggleDone(index) {
-        schedules[index].done = !schedules[index].done;
-        persist();
-        renderSchedules();
+      function deleteSaving(index) {
+        savings.splice(index, 1);
+        saveSavings();
       }
 
-      function deleteSchedule(index) {
-        if (confirm("Yakin ingin hapus jadwal ini?")) {
-          schedules.splice(index, 1);
-          persist();
-          renderSchedules();
+      function resetSavings() {
+        if (confirm("Apakah yakin ingin menghapus semua tabungan?")) {
+          savings = [];
+          saveSavings();
         }
       }
 
-      function renderSchedules() {
-        const list = document.getElementById("scheduleList");
+      function setTarget() {
+        const input = document.getElementById("target").value;
+        if (!input || input <= 0) {
+          alert("Masukkan target yang valid!");
+          return;
+        }
+        target = parseInt(input);
+        localStorage.setItem("target", target);
+        renderSavings();
+      }
+
+      function showConfetti() {
+        var duration = 2 * 1000;
+        var end = Date.now() + duration;
+
+        (function frame() {
+          confetti({
+            particleCount: 7,
+            angle: 60,
+            spread: 55,
+            origin: { x: 0 },
+          });
+          confetti({
+            particleCount: 7,
+            angle: 120,
+            spread: 55,
+            origin: { x: 1 },
+          });
+          if (Date.now() < end) {
+            requestAnimationFrame(frame);
+          }
+        })();
+      }
+
+      function renderSavings() {
+        const list = document.getElementById("savingList");
+        const total = document.getElementById("total");
+        const targetDisplay = document.getElementById("targetDisplay");
+        const progressBar = document.getElementById("progressBar");
+        const motivation = document.getElementById("motivation");
+
         list.innerHTML = "";
 
-        const filterDay = document.getElementById("filterDay").value;
-        const filterTime = document.getElementById("filterTime").value;
+        let sum = 0;
+        savings.forEach((item, index) => {
+          sum += item.amount;
 
-        const grouped = {};
-        schedules.forEach((item, idx) => {
-          if (
-            (filterDay === "All" || filterDay === item.day) &&
-            (filterTime === "All" || filterTime === item.time)
-          ) {
-            if (!grouped[item.day])
-              grouped[item.day] = { Siang: [], Malam: [], Cemilan: [] };
-            grouped[item.day][item.time].push({ ...item, idx });
-          }
+          let li = document.createElement("li");
+          li.className =
+            "card flex justify-between items-center bg-green-50 p-4 rounded-xl shadow-md border border-green-200";
+
+          li.innerHTML = `
+          <div>
+            <p class="font-bold text-lg text-green-700">📅 ${item.date}</p>
+            <p class="text-gray-800">💵 Rp ${formatRupiah(
+              item.amount
+            )} <span class="text-gray-500">(${item.note || "-"})</span></p>
+          </div>
+          <button onclick="deleteSaving(${index})" class="bg-red-400 text-white px-3 py-1 rounded-lg hover:bg-red-500">
+            ❌ Hapus
+          </button>
+        `;
+          list.appendChild(li);
         });
 
-        if (Object.keys(grouped).length === 0) {
-          list.innerHTML =
-            '<p class="text-center text-gray-600 italic">Tidak ada jadwal ditemukan</p>';
-          return;
+        total.textContent = "Rp " + formatRupiah(sum);
+
+        // Update target
+        targetDisplay.textContent = "Rp " + formatRupiah(target);
+
+        let progress =
+          target > 0 ? Math.min(100, Math.round((sum / target) * 100)) : 0;
+        progressBar.style.width = progress + "%";
+        progressBar.textContent = progress + "%";
+
+        // Motivasi dinamis
+        if (progress === 0) {
+          motivation.textContent = "Yuk mulai menabung hari ini! 🌱";
+        } else if (progress < 50) {
+          motivation.textContent = "Mantap 👍 teruskan, target makin dekat!";
+        } else if (progress < 100) {
+          motivation.textContent =
+            "Hebat 💪 tinggal sedikit lagi menuju target!";
+        } else {
+          motivation.textContent =
+            "🎉 Selamat! Target tabungan sudah tercapai!";
+          showConfetti(); // 🎊 Munculkan confetti
         }
-
-        Object.keys(grouped).forEach((day) => {
-          const dayLi = document.createElement("li");
-          dayLi.className =
-            "card bg-orange-100 p-4 rounded-xl shadow-md border border-orange-300";
-          dayLi.innerHTML = `<h3 class="text-xl font-bold mb-2 text-red-700">📅 ${day}</h3>`;
-
-          ["Siang", "Malam", "Cemilan"].forEach((time) => {
-            if (grouped[day][time].length > 0) {
-              const section = document.createElement("div");
-              section.innerHTML = `<p class="font-semibold mt-2">${
-                time === "Siang"
-                  ? "🍽️ Makan Siang"
-                  : time === "Malam"
-                  ? "🌙 Makan Malam"
-                  : "🍪 Cemilan / Snack"
-              }</p>`;
-              grouped[day][time].forEach((item) => {
-                section.innerHTML += `
-                  <div class="bg-white p-3 mt-2 rounded-lg border border-orange-200 flex items-start justify-between gap-2">
-                    <div class="flex items-start gap-2">
-                      <input type="checkbox" onchange="toggleDone(${
-                        item.idx
-                      })" ${item.done ? "checked" : ""} class="mt-1 w-5 h-5">
-                      <div>
-                        <p class="font-bold ${
-                          item.done ? "line-through text-gray-400" : ""
-                        }">
-                          ${item.icon} ${item.menu}
-                        </p>
-                        ${
-                          item.recipe
-                            ? `<p class="text-sm text-gray-700"><b>📖 Resep:</b> ${item.recipe}</p>`
-                            : ""
-                        }
-                        ${
-                          item.steps
-                            ? `<p class="text-sm text-gray-700"><b>👨‍🍳 Cara:</b> ${item.steps}</p>`
-                            : ""
-                        }
-                      </div>
-                    </div>
-                    <button onclick="deleteSchedule(${
-                      item.idx
-                    })" class="text-red-600 hover:text-red-800">🗑️</button>
-                  </div>`;
-              });
-              dayLi.appendChild(section);
-            }
-          });
-
-          list.appendChild(dayLi);
-        });
       }
 
-      renderSchedules();
+      renderSavings();
     </script>
   </body>
 </html>
